@@ -6,17 +6,28 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 class LoadDatabase {
-	private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
-	
-	@Bean
-	CommandLineRunner initDatabase(EmployeeRepository repository) {
-		
-		return args -> {
-			log.info("Preloading " + repository.save(new Employee("Elvis Presley", "musician")));
-			log.info("Preloading " + repository.save(new Employee("Bill Gates", "CEO")));
-		};
-	}
+
+  private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
+
+  @Bean
+  CommandLineRunner initDatabase(EmployeeRepository employeeRepository, OrderRepository orderRepository) {
+
+    return args -> {
+      employeeRepository.save(new Employee("Bilbo", "Baggins", "burglar"));
+      employeeRepository.save(new Employee("Frodo", "Baggins", "thief"));
+
+      employeeRepository.findAll().forEach(employee -> log.info("Preloaded " + employee));
+
+      
+      orderRepository.save(new Order("MacBook Pro", Status.COMPLETED));
+      orderRepository.save(new Order("iPhone 12", Status.IN_PROGRESS));
+
+      orderRepository.findAll().forEach(order -> {
+        log.info("Preloaded " + order);
+      });
+      
+    };
+  }
 }
